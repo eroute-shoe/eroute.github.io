@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380" width="400" height="380">
+  <!-- White background -->
+  <rect width="400" height="380" fill="white"/>
+  
+  <!-- HEAD -->
+  <circle cx="200" cy="55" r="36" fill="#B8F500"/>
+  
+  <!-- BODY / TORSO (curved stroke) -->
+  <path d="M200 88 C195 115 175 140 160 168" 
+        stroke="#B8F500" stroke-width="22" stroke-linecap="round" fill="none"/>
+  
+  <!-- ARM holding cane (left arm going down-right to cane) -->
+  <path d="M185 120 C160 145 130 185 95 255" 
+        stroke="#B8F500" stroke-width="22" stroke-linecap="round" fill="none"/>
+  
+  <!-- CANE (thin line continuing from arm to ground) -->
+  <path d="M95 255 C80 290 68 315 58 340" 
+        stroke="#B8F500" stroke-width="14" stroke-linecap="round" fill="none"/>
+
+  <!-- BACK LEG (right leg, behind) -->
+  <path d="M160 168 C155 205 145 235 130 270" 
+        stroke="#B8F500" stroke-width="22" stroke-linecap="round" fill="none"/>
+  <!-- Back foot/shoe -->
+  <path d="M130 270 C120 280 100 288 78 285" 
+        stroke="#B8F500" stroke-width="22" stroke-linecap="round" fill="none"/>
+  
+  <!-- FRONT LEG (left leg, forward and down) -->
+  <path d="M160 168 C185 210 210 245 225 280" 
+        stroke="#B8F500" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <!-- Front foot/shoe (wider, shoe shape) -->
+  <path d="M225 280 C240 295 275 305 310 298" 
+        stroke="#B8F500" stroke-width="24" stroke-linecap="round" fill="none"/>
+  <!-- Shoe sole underside -->
+  <path d="M230 295 C245 310 280 318 312 308" 
+        stroke="#B8F500" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+  <!-- VIBRATION / MOTION LINES near shoe (right side) -->
+  <path d="M320 288 C332 278 336 265 328 255" 
+        stroke="#B8F500" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M338 300 C355 286 360 268 350 254" 
+        stroke="#B8F500" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M356 312 C376 294 382 272 370 256" 
+        stroke="#B8F500" stroke-width="10" stroke-linecap="round" fill="none"/>
+
+  <!-- GROUND SHADOW LINE -->
+  <path d="M50 345 C120 352 260 350 340 342" 
+        stroke="#B8F500" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>

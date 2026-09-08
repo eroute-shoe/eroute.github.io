@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="e-Route smart assistive shoes — move without doubt. AI-powered footwear for visually impaired users with obstacle detection, stair recognition, GPS alerts, and auto LED lighting." />
+  <title>e-Route — Move Without Doubt | Smart Assistive Shoe</title>
+  <style>
+    /* ==============================
+       BASE RESET & VARIABLES
+    ============================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:         #0a0a0a;
+      --dark:          #111318;
+      --dark2:         #161b24;
+      --navy:          #0d1a10;
+      --green:         #B8F500;
+      --green-bright:  #C8FF1A;
+      --green-dark:    #6FAF00;
+      --green-glow:    rgba(184,245,0,0.15);
+      --white:         #ffffff;
+      --gray-light:    #e8eaf0;
+      --gray:          #8e9ab0;
+      --gray-dark:     #3a4258;
+      --font:          'Segoe UI', system-ui, -apple-system, sans-serif;
+      --radius:        14px;
+      --trans:         0.3s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; height: auto; }
+    a   { text-decoration: none; color: inherit; }
+    ul  { list-style: none; }
+
+    /* ==============================
+       TYPOGRAPHY HELPERS
+    ============================== */
+    .label {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+    }
+    h1 { font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; }
+    h2 { font-size: clamp(1.8rem, 4vw, 3rem);  font-weight: 800; line-height: 1.1;  letter-spacing: -0.02em; }
+    h3 { font-size: 1.15rem; font-weight: 700; }
+    p  { color: var(--gray); font-size: 1.05rem; }
+    p.lead { font-size: 1.15rem; color: #b0b8c8; max-width: 600px; }
+
+    /* ==============================
+       LAYOUT UTILITIES
+    ============================== */
+    .container { width: 92%; max-width: 1200px; margin: 0 auto; }
+    .section    { padding: 100px 0; }
+    .section-sm { padding: 70px 0; }
+
+    .flex-row   { display: flex; align-items: center; gap: 60px; }
+    .flex-row.reverse { flex-direction: row-reverse; }
+
+    .col-text { flex: 1; }
+    .col-img  { flex: 1; }
+
+    .col-img img {
+      border-radius: var(--radius);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      width: 100%;
+    }
+
+    .text-center { text-align: center; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+
+    /* ==============================
+       ANIMATION
+    ============================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ==============================
+       NAVIGATION
+    ============================== */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 5%;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background var(--trans), box-shadow var(--trans);
+    }
+    #navbar.scrolled {
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--white);
+    }
+    .nav-logo-img {
+      height: 36px;
+      width: auto;
+      display: block;
+      filter: drop-shadow(0 0 6px rgba(184,245,0,0.3));
+    }
+    .nav-logo-text { color: var(--white); }
+    .nav-logo-text span { color: var(--green); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray);
+      transition: color var(--trans);
+      letter-spacing: 0.02em;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .btn-nav {
+      background: var(--green);
+      color: var(--black);
+      padding: 9px 22px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: background var(--trans), transform var(--trans);
+      white-space: nowrap;
+    }
+    .btn-nav:hover { background: var(--green-bright); transform: translateY(-1px); }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: transform var(--trans), opacity var(--trans);
+    }
+
+    /* ==============================
+       BUTTONS
+    ============================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all var(--trans);
+      letter-spacing: 0.01em;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: var(--black);
+    }
+    .btn-primary:hover {
+      background: var(--green-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(184,245,0,0.30);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.25);
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,0.07);
+      transform: translateY(-2px);
+    }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+
+    /* ==============================
+       HERO SECTION
+    ============================== */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding-top: 68px;
+    }
+    #hero .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: var(--dark);
+    }
+    #hero .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 30% center;
+      opacity: 0.85;
+    }
+    #hero .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(10,10,10,0.96)  0%,
+        rgba(10,10,10,0.92) 30%,
+        rgba(10,10,10,0.65) 55%,
+        rgba(10,10,10,0.25) 75%,
+        rgba(10,10,10,0.06) 100%
+      );
+    }
+    #hero .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 560px;
+    }
+
+    .hero-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+    .hero-logo-wrap img {
+      height: 64px;
+      width: auto;
+      filter: drop-shadow(0 0 14px rgba(184,245,0,0.4));
+    }
+    #hero h1 { margin-bottom: 0; }
+    #hero h1 .brand { color: var(--green); }
+
+    .hero-slogan {
+      font-size: clamp(0.92rem, 2vw, 1.1rem);
+      font-weight: 500;
+      color: var(--green);
+      letter-spacing: 0.05em;
+      font-style: italic;
+      margin-top: 10px;
+      margin-bottom: 18px;
+      opacity: 0.88;
+    }
+    #hero .hero-sub {
+      font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+      font-weight: 600;
+      color: #c8d0df;
+      margin-bottom: 18px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(184,245,0,0.12);
+      border: 1px solid rgba(184,245,0,0.28);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero-badge::before {
+      content: '';
+      display: block;
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .scroll-arrow {
+      width: 28px;
+      height: 28px;
+      border-right: 2px solid rgba(255,255,255,0.25);
+      border-bottom: 2px solid rgba(255,255,255,0.25);
+      transform: rotate(45deg);
+      animation: scrollBounce 2s infinite;
+      margin-top: -4px;
+    }
+    @keyframes scrollBounce {
+      0%, 100% { transform: rotate(45deg) translateY(0);  }
+      50%       { transform: rotate(45deg) translateY(6px); }
+    }
+
+    /* ==============================
+       SECTION DIVIDERS
+    ============================== */
+    .divider {
+      width: 52px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), transparent);
+      border-radius: 2px;
+      margin: 20px 0 28px;
+    }
+    .divider-center { margin-left: auto; margin-right: auto; }
+
+    /* ==============================
+       PROBLEM SECTION
+    ============================== */
+    #problem { background: var(--dark2); }
+
+    /* ==============================
+       PRODUCT CLOSE-UP
+    ============================== */
+    #product { background: var(--dark); }
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+    .tag {
+      background: rgba(184,245,0,0.09);
+      border: 1px solid rgba(184,245,0,0.25);
+      color: var(--green);
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* ==============================
+       HOW IT WORKS
+    ============================== */
+    #how-it-works { background: var(--navy); }
+
+    .step-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      position: relative;
+      transition: border-color var(--trans), transform var(--trans), box-shadow var(--trans);
+    }
+    .step-card:hover {
+      border-color: rgba(184,245,0,0.35);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .step-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--green);
+      opacity: 0.22;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+    .step-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+    .step-card h3 { margin-bottom: 10px; }
+    .step-card p  { font-size: 0.92rem; line-height: 1.65; }
+
+    /* ==============================
+       FEATURE SECTIONS
+    ============================== */
+    #stair-detection    { background: var(--dark2); }
+    #obstacle-detection { background: var(--dark);  }
+    #night-lighting     { background: var(--navy);  }
+
+    .feature-highlight {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      margin-bottom: 10px;
+    }
+    .feature-dot {
+      width: 9px;
+      height: 9px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .feature-highlight p {
+      font-size: 0.95rem;
+      color: #b0b8c8;
+      margin: 0;
+    }
+
+    /* ==============================
+       TECHNOLOGY INSIDE
+    ============================== */
+    #technology { background: var(--dark2); }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 40px;
+    }
+    .tech-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-left: 3px solid var(--green);
+      border-radius: 10px;
+      padding: 20px 22px;
+      transition: background var(--trans), box-shadow var(--trans);
+    }
+    .tech-item:hover {
+      background: rgba(184,245,0,0.06);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .tech-item h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 5px;
+    }
+    .tech-item p {
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    /* ==============================
+       COMPARISON SECTION
+    ============================== */
+    #comparison { background: var(--dark); }
+
+    .compare-img-wrapper {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      margin-bottom: 50px;
+    }
+    .compare-img-wrapper img { width: 100%; border-radius: var(--radius); }
+
+    .compare-table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      padding: 18px 24px;
+      text-align: left;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    thead th:first-child  { color: var(--gray); background: rgba(255,255,255,0.03); }
+    thead th:nth-child(2) { color: var(--gray); background: rgba(255,255,255,0.03); }
+    thead th:last-child   { color: var(--green); background: rgba(184,245,0,0.08);  }
+
+    tbody tr {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      transition: background var(--trans);
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    tbody td {
+      padding: 16px 24px;
+      font-size: 0.9rem;
+    }
+    tbody td:first-child { color: var(--gray); }
+    tbody td:last-child  { color: #c8f08a;     }
+
+    .check { color: var(--green); font-weight: 700; margin-right: 8px; }
+    .cross { color: #ff5555;      font-weight: 700; margin-right: 8px; }
+
+    /* ==============================
+       REAL-LIFE / EMERGENCY / GUARDIAN
+    ============================== */
+    #real-life  { background: var(--navy); }
+    #emergency  { background: var(--dark2); }
+    #notification{ background: var(--dark); }
+    #guardian   { background: var(--navy); }
+    #prototype  { background: var(--dark); }
+    #journey    { background: var(--dark2); }
+    #contact    { background: var(--navy); }
+
+    /* ==============================
+       PHONE NOTIFICATION CARD
+    ============================== */
+    .notif-card {
+      background: #1a1d26;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 28px 28px;
+      max-width: 380px;
+    }
+    .notif-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .notif-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #ff4444, #cc2222);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .notif-app  { font-size: 0.72rem; color: var(--gray); }
+    .notif-time { font-size: 0.72rem; color: var(--gray); margin-left: auto; }
+    .notif-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+    .notif-body  { font-size: 0.84rem; color: var(--gray); line-height: 1.5; }
+    .notif-action {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .notif-btn {
+      flex: 1;
+      text-align: center;
+      padding: 9px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+    }
+    .notif-btn-sos  { background: #ff4444; color: #fff; }
+    .notif-btn-view {
+      background: rgba(184,245,0,0.14);
+      color: var(--green);
+      border: 1px solid rgba(184,245,0,0.28);
+    }
+
+    /* ==============================
+       CONTACT FORM
+    ============================== */
+    .contact-form {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 48px 44px;
+      max-width: 580px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray);
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color var(--trans), background var(--trans);
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--green);
+      background: rgba(184,245,0,0.05);
+    }
+    .form-group textarea { resize: vertical; min-height: 130px; }
+
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: var(--black);
+      border: none;
+      padding: 15px 36px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--trans);
+      margin-top: 10px;
+    }
+    .btn-submit:hover {
+      background: var(--green-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(184,245,0,0.28);
+    }
+
+    /* ==============================
+       FOOTER
+    ============================== */
+    #footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 60px 0 36px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 50px;
+      margin-bottom: 50px;
+    }
+    .footer-brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .footer-logo-img {
+      height: 44px;
+      width: auto;
+      filter: drop-shadow(0 0 6px rgba(184,245,0,0.25));
+    }
+    .footer-brand .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .footer-brand .logo span { color: var(--green); }
+    .footer-slogan {
+      font-size: 0.82rem;
+      color: var(--green);
+      font-style: italic;
+      letter-spacing: 0.03em;
+      margin-bottom: 14px;
+      opacity: 0.85;
+    }
+    .footer-brand p { font-size: 0.88rem; max-width: 280px; line-height: 1.7; }
+    .footer-col h4 {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 18px;
+    }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a { font-size: 0.88rem; color: #8090a8; transition: color var(--trans); }
+    .footer-col ul li a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p { font-size: 0.8rem; color: #4a5570; }
+    .footer-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(184,245,0,0.09);
+      border: 1px solid rgba(184,245,0,0.2);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: 0.06em;
+    }
+
+    /* ==============================
+       MOBILE MENU
+    ============================== */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0;
+      background: rgba(10,10,10,0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 999;
+      padding: 24px 5% 36px;
+      flex-direction: column;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      padding: 13px 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--gray);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: color var(--trans);
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--white); }
+    .mobile-menu .btn-nav { margin-top: 12px; text-align: center; width: 100%; padding: 14px; }
+
+    /* ==============================
+       STATS BAR
+    ============================== */
+    .stats-bar {
+      background: var(--dark2);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 28px 0;
+    }
+    .stats-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--green);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--gray); letter-spacing: 0.05em; margin-top: 4px; }
+
+    .sensor-icons-img {
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      width: 100%;
+    }
+
+    /* ==============================
+       GLOW ACCENTS
+    ============================== */
+    .glow-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--green), transparent);
+      margin: 0;
+      opacity: 0.35;
+    }
+
+    /* ==============================
+       RESPONSIVE
+    ============================== */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-toggle { display: flex; }
+      .flex-row, .flex-row.reverse { flex-direction: column; }
+      .col-img { order: -1; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-brand { grid-column: 1/-1; }
+    }
+    @media (max-width: 600px) {
+      .section    { padding: 70px 0; }
+      .grid-2     { grid-template-columns: 1fr; }
+      .grid-3     { grid-template-columns: 1fr; }
+      .grid-4     { grid-template-columns: 1fr; }
+      .footer-grid{ grid-template-columns: 1fr; }
+      .footer-brand{ grid-column: auto; }
+      .compare-table-wrapper { font-size: 0.82rem; }
+      .btn-row    { flex-direction: column; }
+      .btn        { text-align: center; justify-content: center; }
+      .contact-form { padding: 30px 22px; }
+      .stats-inner { justify-content: center; }
+      h2          { font-size: 1.7rem; }
+      .hero-logo-wrap img { height: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================
+     NAVIGATION
+================================ -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <img src="images/eroute-logo.png" alt="e-Route logo" class="nav-logo-img"
+         onerror="this.src='images/eroute-logo.svg'" />
+    <span class="nav-logo-text">e-<span>Route</span></span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#product">Product</a></li>
+    <li><a href="#how-it-works">Features</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#comparison">Comparison</a></li>
+    <li><a href="#guardian">App</a></li>
+    <li><a href="#prototype">Prototype</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#how-it-works" class="btn-nav">Explore e-Route</a></li>
+  </ul>
+
+  <div class="nav-toggle" id="navToggle" aria-label="Open menu" role="button">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#hero" class="mobile-link">Home</a>
+  <a href="#product" class="mobile-link">Product</a>
+  <a href="#how-it-works" class="mobile-link">Features</a>
+  <a href="#technology" class="mobile-link">Technology</a>
+  <a href="#comparison" class="mobile-link">Comparison</a>
+  <a href="#guardian" class="mobile-link">App</a>
+  <a href="#prototype" class="mobile-link">Prototype</a>
+  <a href="#contact" class="mobile-link">Contact</a>
+  <a href="#how-it-works" class="btn-nav mobile-link">Explore e-Route</a>
+</div>
+
+<!-- ================================
+     HERO SECTION
+================================ -->
+<section id="hero">
+  <div class="hero-bg">
+    <img src="images/hero-updated.png" alt="e-Route smart shoe" onerror="this.src='images/hero.png'" />
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="container">
+    <div class="hero-content reveal">
+      <div class="hero-badge">Smart Assistive Technology</div>
+
+      <div class="hero-logo-wrap">
+        <img src="images/eroute-logo.png" alt="e-Route logo"
+             onerror="this.src='images/eroute-logo.svg'" />
+        <h1><span class="brand">e-Route</span></h1>
+      </div>
+
+      <p class="hero-slogan">e-Route, move without doubt</p>
+      <p class="hero-sub">Smart Shoes for Safer Independent Walking</p>
+      <p class="lead">
+        AI-powered smart shoes designed to help visually impaired users detect obstacles,
+        recognize stairs, receive vibration alerts, and share emergency location with family.
+      </p>
+
+      <div class="btn-row">
+        <a href="#how-it-works" class="btn btn-primary">Explore Features</a>
+        <a href="#technology" class="btn btn-outline">See How It Works</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ================================
+     STATS BAR
+================================ -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-inner">
+      <div class="stat-item reveal">
+        <div class="stat-num">7+</div>
+        <div class="stat-label">Smart Sensors</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-num">360°</div>
+        <div class="stat-label">Obstacle Awareness</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-num">AI</div>
+        <div class="stat-label">Stair Recognition</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-num">GPS</div>
+        <div class="stat-label">Emergency Alert</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-4">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Hands Occupied</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================
+     PROBLEM SECTION
+================================ -->
+<section id="problem" class="section">
+  <div class="container">
+    <div class="flex-row">
+      <div class="col-img reveal">
+        <img src="images/problem.png" alt="Visually impaired user with traditional white cane" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">The Challenge</span>
+        <h2>The Problem with Traditional Navigation</h2>
+        <div class="divider"></div>
+        <p class="lead" style="margin-bottom:18px;">
+          The traditional white cane is a trusted and important assistive tool. However, it has natural limitations
+          that can restrict a user's confidence and awareness of their surroundings.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Provides limited information about the surrounding environment</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Requires one hand to be occupied at all times</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Cannot intelligently detect or warn about stairs ahead</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Cannot send emergency alerts or share GPS location with family</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Provides no lighting assistance in low-visibility environments</p>
+        </div>
+        <p style="margin-top:22px; font-size:0.95rem; color:#7a8aaa; font-style:italic;">
+          e-Route is not a replacement — it is a smart assistive layer that works alongside traditional aids
+          to give users more information, more safety, and more independence.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ================================
+     PRODUCT CLOSE-UP SECTION
+================================ -->
+<section id="product" class="section">
+  <div class="container">
+    <div class="flex-row reverse">
+      <div class="col-img reveal">
+        <img src="images/product-closeup-updated.png" alt="e-Route product close-up" onerror="this.src='images/product-closeup.png'" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">The Product</span>
+        <h2>Designed Like a Shoe.<br>Powered Like a Smart Device.</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          e-Route integrates advanced sensor technology directly into a sleek, athletic shoe design —
+          invisible to the eye, powerful in function.
+        </p>
+        <div class="feature-tags" style="margin-top:26px;">
+          <span class="tag">AI Camera Module</span>
+          <span class="tag">Integrated Front Sensors</span>
+          <span class="tag">LED Light Strip</span>
+          <span class="tag">Vibration Feedback</span>
+          <span class="tag">Sleek Black Design</span>
+          <span class="tag">Protected Electronics</span>
+          <span class="tag">Side Control Button</span>
+          <span class="tag">e-Route Branding</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     HOW IT WORKS SECTION
+================================ -->
+<section id="how-it-works" class="section" style="background:var(--navy);">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="label">Core Features</span>
+      <h2>How e-Route Works</h2>
+      <div class="divider divider-center"></div>
+      <p style="max-width:560px; margin:0 auto 50px;">
+        Four intelligent systems work together inside e-Route to give the user real-time awareness
+        of their environment and safety at every step.
+      </p>
+    </div>
+
+    <div class="grid-4">
+      <div class="step-card reveal">
+        <div class="step-number">01</div>
+        <div class="step-icon">&#x26A1;</div>
+        <h3>Obstacle Detection</h3>
+        <p>Ultrasonic sensors detect nearby obstacles and activate stronger continuous vibration when an object is close.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-number">02</div>
+        <div class="step-icon">&#x1F6EB;</div>
+        <h3>Stair Recognition</h3>
+        <p>The AI camera detects stairs ahead and alerts the user using distinct vibration patterns before they reach the step.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-number">03</div>
+        <div class="step-icon">&#x1F4CD;</div>
+        <h3>Emergency Alert</h3>
+        <p>If a fall or crash is detected, e-Route sends an emergency alert with GPS location to selected family members instantly.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-number">04</div>
+        <div class="step-icon">&#x1F4A1;</div>
+        <h3>Auto Night Lighting</h3>
+        <p>The LDR sensor detects dark environments and automatically turns on integrated LED lights for safety and visibility.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:50px;" class="reveal">
+      <img src="images/sensor-icons.png" alt="e-Route sensor icon set" class="sensor-icons-img" />
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     STAIR DETECTION SECTION
+================================ -->
+<section id="stair-detection" class="section">
+  <div class="container">
+    <div class="flex-row">
+      <div class="col-img reveal">
+        <img src="images/stair-detection.png" alt="e-Route stair detection AI" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">AI Feature</span>
+        <h2>AI Stair Recognition</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          e-Route uses an onboard AI camera module to identify stairs in the user's path before they arrive at the edge.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Detects ascending and descending stairs in real time</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Sends a distinct vibration pattern to warn the user</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>AI scanning identifies stair edges before the user reaches them</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Gives the user time to slow down and navigate safely</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ================================
+     OBSTACLE DETECTION SECTION
+================================ -->
+<section id="obstacle-detection" class="section" style="background:var(--dark2);">
+  <div class="container">
+    <div class="flex-row reverse">
+      <div class="col-img reveal">
+        <img src="images/obstacle-detection.png" alt="e-Route obstacle detection" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">Ultrasonic Sensing</span>
+        <h2>Smart Obstacle Awareness</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          Ultrasonic sensing continuously scans the walking path ahead. When an obstacle enters the detection range,
+          the shoe warns the user through immediate vibration feedback.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Continuous forward scanning while walking</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Stronger vibration as the obstacle gets closer</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Detects concrete pillars, walls, vehicles, and other objects</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Works hands-free — no action required from the user</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     NIGHT / LED LIGHTING SECTION
+================================ -->
+<section id="night-lighting" class="section">
+  <div class="container">
+    <div class="flex-row">
+      <div class="col-img reveal">
+        <img src="images/night-lighting.png" alt="e-Route automatic LED lighting in dark environment" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">Auto Lighting</span>
+        <h2>Automatic LED Lighting</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          When the surrounding environment becomes dark, e-Route automatically turns on built-in LED lighting
+          to improve visibility and safety — no manual switching needed.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>LDR sensor monitors ambient light levels constantly</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Automatically activates when environment turns dark</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Makes the user visible to others in low-light environments</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Integrated LED strip across the shoe sole for maximum coverage</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ================================
+     TECHNOLOGY INSIDE SECTION
+================================ -->
+<section id="technology" class="section">
+  <div class="container">
+    <div class="flex-row reverse" style="align-items:flex-start; gap:70px;">
+      <div class="col-img reveal">
+        <img src="images/cutaway.png" alt="e-Route internal technology cutaway view" />
+      </div>
+      <div class="col-text reveal reveal-delay-1" style="flex:1.1;">
+        <span class="label">Internal Architecture</span>
+        <h2>Technology Inside e-Route</h2>
+        <div class="divider"></div>
+        <p style="margin-bottom:30px;">
+          Every component inside e-Route is purpose-built for assistive functionality,
+          working together as a unified intelligent system.
+        </p>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <h4>AI Camera Module</h4>
+            <p>Real-time stair detection and visual scene recognition</p>
+          </div>
+          <div class="tech-item">
+            <h4>Ultrasonic Sensor</h4>
+            <p>Continuous obstacle detection in the walking path</p>
+          </div>
+          <div class="tech-item">
+            <h4>GPS Module</h4>
+            <p>Live location tracking for emergency alerts</p>
+          </div>
+          <div class="tech-item">
+            <h4>Crash Sensor</h4>
+            <p>Detects falls and triggers emergency notification</p>
+          </div>
+          <div class="tech-item">
+            <h4>Vibration Motor</h4>
+            <p>Haptic feedback to communicate alerts to the user</p>
+          </div>
+          <div class="tech-item">
+            <h4>LDR Light Sensor</h4>
+            <p>Monitors ambient brightness to trigger LED automation</p>
+          </div>
+          <div class="tech-item">
+            <h4>LED Lighting System</h4>
+            <p>Automatic illumination for dark environments</p>
+          </div>
+          <div class="tech-item">
+            <h4>Control Electronics</h4>
+            <p>AI processing core and system coordination</p>
+          </div>
+          <div class="tech-item">
+            <h4>Battery Pack</h4>
+            <p>Rechargeable power system for all-day usage</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     COMPARISON SECTION
+================================ -->
+<section id="comparison" class="section" style="background:var(--dark2);">
+  <div class="container">
+    <div class="text-center reveal" style="margin-bottom:44px;">
+      <span class="label">Side by Side</span>
+      <h2>Traditional White Cane vs e-Route Smart Shoes</h2>
+      <div class="divider divider-center"></div>
+      <p style="max-width:560px; margin:0 auto;">
+        The white cane remains a respected and valued tool. e-Route adds a new layer of smart assistance
+        for users who want more information and greater independence.
+      </p>
+    </div>
+
+    <div class="compare-img-wrapper reveal">
+      <img src="images/comparison.png" alt="Comparison between white cane and e-Route smart shoes" />
+    </div>
+
+    <div class="compare-table-wrapper reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Traditional White Cane</th>
+            <th>e-Route Smart Shoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Obstacle Information</td>
+            <td><span class="cross">&#x2716;</span>Limited detection area</td>
+            <td><span class="check">&#x2714;</span>Ultrasonic obstacle detection</td>
+          </tr>
+          <tr>
+            <td>Hands-Free</td>
+            <td><span class="cross">&#x2716;</span>One hand occupied at all times</td>
+            <td><span class="check">&#x2714;</span>Completely hands-free walking</td>
+          </tr>
+          <tr>
+            <td>Stair Recognition</td>
+            <td><span class="cross">&#x2716;</span>No intelligent stair detection</td>
+            <td><span class="check">&#x2714;</span>AI camera stair recognition</td>
+          </tr>
+          <tr>
+            <td>Emergency Alert</td>
+            <td><span class="cross">&#x2716;</span>No alert capability</td>
+            <td><span class="check">&#x2714;</span>Crash detection + GPS alert</td>
+          </tr>
+          <tr>
+            <td>Night Lighting</td>
+            <td><span class="cross">&#x2716;</span>No lighting feature</td>
+            <td><span class="check">&#x2714;</span>Automatic LED illumination</td>
+          </tr>
+          <tr>
+            <td>Vibration Feedback</td>
+            <td><span class="cross">&#x2716;</span>Not available</td>
+            <td><span class="check">&#x2714;</span>Haptic warning system</td>
+          </tr>
+          <tr>
+            <td>GPS Tracking</td>
+            <td><span class="cross">&#x2716;</span>Not available</td>
+            <td><span class="check">&#x2714;</span>Live location sharing</td>
+          </tr>
+          <tr>
+            <td>Guardian App</td>
+            <td><span class="cross">&#x2716;</span>Not available</td>
+            <td><span class="check">&#x2714;</span>Full monitoring dashboard</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     REAL-LIFE USAGE SECTION
+================================ -->
+<section id="real-life" class="section">
+  <div class="container">
+    <div class="flex-row">
+      <div class="col-text reveal">
+        <span class="label">Real-World Use</span>
+        <h2>Confidence in Everyday Walking</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          e-Route is designed to support daily movement across all the environments that matter most.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Public streets and crossings</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Schools, universities, and offices</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Shopping malls and commercial areas</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Outdoor walkways and public parks</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Anywhere independence and safety matter</p>
+        </div>
+      </div>
+      <div class="col-img reveal reveal-delay-1">
+        <img src="images/real-life-usage.png" alt="User walking confidently with e-Route shoes" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ================================
+     EMERGENCY ALERT / CRASH SECTION
+================================ -->
+<section id="emergency" class="section" style="background:var(--dark2);">
+  <div class="container">
+    <div class="flex-row reverse">
+      <div class="col-img reveal">
+        <img src="images/emergency-alert.png" alt="e-Route emergency fall detection and alert" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">Safety System</span>
+        <h2>Safety Beyond Walking</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          If the user experiences a fall or crash, e-Route detects the event immediately and
+          sends an emergency notification to selected family members with the live GPS location.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Crash sensor triggers within seconds of a detected fall</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Automatic notification sent to pre-selected guardians</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Live GPS location shared in real time</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Guardian can call back or navigate to the user instantly</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     PHONE NOTIFICATION SECTION
+================================ -->
+<section id="notification" class="section">
+  <div class="container">
+    <div class="flex-row">
+      <div class="col-text reveal">
+        <span class="label">Guardian Alerts</span>
+        <h2>Instant Guardian Notifications</h2>
+        <div class="divider"></div>
+        <p class="lead" style="margin-bottom:30px;">
+          When e-Route detects a fall, guardians receive a real-time push notification
+          with all the information they need to respond immediately.
+        </p>
+
+        <div class="notif-card">
+          <div class="notif-header">
+            <div class="notif-icon">&#x26A0;</div>
+            <div>
+              <div style="font-size:0.82rem; font-weight:700;">e-Route</div>
+              <div class="notif-app">Emergency Alert</div>
+            </div>
+            <div class="notif-time">Now</div>
+          </div>
+          <div class="notif-title">&#x1F6A8; Possible Fall Detected</div>
+          <div class="notif-body">
+            Emergency Alert: Possible fall detected for your linked user.<br/>
+            Live location is being shared. Tap to view on map.
+          </div>
+          <div class="notif-action">
+            <button class="notif-btn notif-btn-sos">SOS Response</button>
+            <button class="notif-btn notif-btn-view">View Location</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-img reveal reveal-delay-1">
+        <img src="images/phone-notification.png" alt="e-Route phone emergency notification mockup" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     GUARDIAN DASHBOARD SECTION
+================================ -->
+<section id="guardian" class="section" style="background:var(--navy);">
+  <div class="container">
+    <div class="flex-row reverse">
+      <div class="col-img reveal">
+        <img src="images/guardian-dashboard.png" alt="e-Route guardian monitoring dashboard" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">Guardian App Concept</span>
+        <h2>Guardian Dashboard</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          The e-Route app concept gives family members and caregivers a complete monitoring dashboard
+          to stay connected with the user at all times.
+        </p>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Live location on an interactive map</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>User status and battery level monitoring</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Recent activity and alert history log</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Emergency contact management</p>
+        </div>
+        <div class="feature-highlight">
+          <div class="feature-dot"></div>
+          <p>Quick call and location-share actions</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     PROTOTYPE SECTION
+================================ -->
+<section id="prototype" class="section" style="background:var(--dark);">
+  <div class="container">
+    <div class="flex-row">
+      <div class="col-img reveal">
+        <img src="images/prototype.png" alt="e-Route working prototype" />
+      </div>
+      <div class="col-text reveal reveal-delay-1">
+        <span class="label">Built and Tested</span>
+        <h2>From Working Prototype to Final Product</h2>
+        <div class="divider"></div>
+        <p class="lead">
+          e-Route began as a real, functional prototype using physical sensors, an AI camera, GPS,
+          vibration motor, LDR sensor, LEDs, and crash detection hardware.
+        </p>
+        <p style="margin-top:16px; color:#8090a8;">
+          The prototype proved every core concept works. The final product concept refines these
+          components into a protected, wearable, and professional shoe design ready for real-world use.
+        </p>
+        <div class="feature-tags" style="margin-top:28px;">
+          <span class="tag">HuskyLens AI Camera</span>
+          <span class="tag">Ultrasonic Sensor</span>
+          <span class="tag">GPS Module</span>
+          <span class="tag">Crash Detection</span>
+          <span class="tag">LED System</span>
+          <span class="tag">Vibration Motor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     DEVELOPMENT JOURNEY SECTION
+================================ -->
+<section id="journey" class="section">
+  <div class="container">
+    <div class="text-center reveal" style="margin-bottom:48px;">
+      <span class="label">Project Evolution</span>
+      <h2>Development Journey</h2>
+      <div class="divider divider-center"></div>
+      <p style="max-width:580px; margin:0 auto;">
+        e-Route evolved from a functional prototype into a professional assistive technology
+        product concept — every stage driven by a real mission to improve independence for
+        visually impaired users.
+      </p>
+    </div>
+
+    <div class="reveal">
+      <img
+        src="images/development-journey.png"
+        alt="e-Route development journey infographic"
+        style="border-radius:var(--radius); box-shadow:0 30px 80px rgba(0,0,0,0.5); width:100%;"
+      />
+    </div>
+
+    <div class="grid-3" style="margin-top:44px;">
+      <div class="step-card reveal">
+        <div class="step-number" style="font-size:1.8rem;">01</div>
+        <h3>Prototype Build</h3>
+        <p>Assembled and tested all hardware components including the AI camera, sensors, GPS, and vibration motor in a working prototype.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-number" style="font-size:1.8rem;">02</div>
+        <h3>System Integration</h3>
+        <p>Programmed obstacle detection, stair recognition, crash detection, emergency alerts, and LED automation into a unified system.</p>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-number" style="font-size:1.8rem;">03</div>
+        <h3>Product Concept</h3>
+        <p>Designed the final product form factor — a premium athletic shoe with all electronics protected, integrated, and production-ready.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ================================
+     CONTACT SECTION
+================================ -->
+<section id="contact" class="section" style="background:var(--navy);">
+  <div class="container">
+    <div class="flex-row" style="align-items:flex-start;">
+      <div class="col-text reveal" style="flex:1;">
+        <span class="label">Get In Touch</span>
+        <h2>Request a Demo</h2>
+        <div class="divider"></div>
+        <p class="lead" style="margin-bottom:16px;">
+          Interested in learning more about e-Route? Send us a message and we'll
+          be in touch with more information.
+        </p>
+        <p style="color:#5a6a80; font-size:0.9rem; margin-top:12px;">
+          e-Route is a university project and research prototype. This is a concept demonstration website.
+        </p>
+      </div>
+
+      <div class="reveal reveal-delay-1" style="flex:1;">
+        <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="Your full name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Tell us about your interest in e-Route..." required></textarea>
+          </div>
+          <button type="submit" class="btn-submit">
+            Send Message
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================
+     FOOTER
+================================ -->
+<footer id="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-wrap">
+          <img src="images/eroute-logo.png" alt="e-Route logo" class="footer-logo-img"
+               onerror="this.src='images/eroute-logo.svg'" />
+          <div class="logo">e-<span>Route</span></div>
+        </div>
+        <div class="footer-slogan">e-Route, move without doubt</div>
+        <p>Smart Shoes for Safer Independent Walking. AI-powered assistive footwear designed to give visually impaired users confidence, safety, and independence.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#product">Product</a></li>
+          <li><a href="#how-it-works">Features</a></li>
+          <li><a href="#technology">Technology</a></li>
+          <li><a href="#comparison">Comparison</a></li>
+          <li><a href="#guardian">App</a></li>
+          <li><a href="#prototype">Prototype</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Features</h4>
+        <ul>
+          <li><a href="#stair-detection">Stair Detection</a></li>
+          <li><a href="#obstacle-detection">Obstacle Detection</a></li>
+          <li><a href="#night-lighting">LED Lighting</a></li>
+          <li><a href="#emergency">Emergency Alert</a></li>
+          <li><a href="#notification">Guardian Alerts</a></li>
+          <li><a href="#guardian">Dashboard</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2024 e-Route. University Project — Assistive Technology Concept. All rights reserved.</p>
+      <div class="footer-tag">e-Route, move without doubt</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================
+     JAVASCRIPT
+================================ -->
+<script>
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Mobile menu toggle
+  const navToggle  = document.getElementById('navToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  navToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+
+  // Close mobile menu on link click
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+  // Intersection Observer for reveal animations
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer  = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  );
+  revealEls.forEach(el => observer.observe(el));
+
+  // Hero is visible immediately
+  document.querySelector('#hero .reveal')?.classList.add('visible');
+
+  // Contact form handler
+  function handleSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    alert(`Thank you, ${name}. Your message has been received. We will be in touch soon.`);
+    e.target.reset();
+  }
+
+  // Smooth active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id], footer[id]');
+  const navLinks  = document.querySelectorAll('.nav-links a');
+
+  const navObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(link => {
+            const href = link.getAttribute('href').replace('#','');
+            link.style.color = href === id ? 'var(--white)' : '';
+          });
+        }
+      });
+    },
+    { threshold: 0.4 }
+  );
+  sections.forEach(s => navObserver.observe(s));
+</script>
+
+</body>
+</html>
